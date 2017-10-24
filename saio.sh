@@ -3,11 +3,11 @@ DEBIAN=0
 REDHAT=1
 SUSE=2
 SIZE=1
-UNIT_TESTS=1
+UNIT_TESTS=0
 BUILD_LIBERASURECODE=1
 branch=${1:-master}
 
-DISTRO=$DEBIAN
+DISTRO=$REDHAT
 
 function build_liberasurecode() {
   if [ ${BUILD_LIBERASURECODE} -eq 0 ]
@@ -49,6 +49,7 @@ then
                        python-mock
 else
   sudo yum update
+  sudo yum install -y epel-release
   sudo yum install -y curl gcc memcached rsync sqlite xfsprogs git-core \
                       libffi-devel xinetd \
                       openssl-devel python-setuptools \
@@ -56,7 +57,8 @@ else
                       pyxattr python-eventlet \
                       python-greenlet python-paste-deploy \
                       python-netifaces python-pip python-dns \
-                      python-mock
+                      python-mock 
+
 fi
 
 if [ $BUILD_LIBERASURECODE -gt 0 ]
