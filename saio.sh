@@ -6,6 +6,8 @@ SIZE=1
 UNIT_TESTS=0
 BUILD_LIBERASURECODE=1
 branch=${1:-master}
+LOCALHOST=0
+IP_SUBNET="192.168.100"
 
 DISTRO=$REDHAT
 
@@ -45,7 +47,7 @@ then
   sudo apt-get install -y python-coverage python-dev python-nose \
                        python-xattr python-eventlet \
                        python-greenlet python-pastedeploy \
-                       python-netifaces python-pip python-dnspython \
+                       thon-netifaces python-pip python-dnspython \
                        python-mock
 else
   sudo yum update
@@ -188,6 +190,13 @@ cd $HOME/swift/doc; sudo cp -r saio/swift /etc/swift; cd -
 sudo chown -R ${USER}:${USER} /etc/swift
 
 find /etc/swift/ -name \*.conf | xargs sudo sed -i "s/<your-user-name>/${USER}/"
+if [[ $LOCALHOST == 0 ]]
+then
+    sed -i 's/bind_ip = 127.0.0../bind_ip = 0.0.0.0/g' /etc/swift/proxy-server.conf
+    sed -i 's/bind_ip = 127.0.0../bind_ip = 0.0.0.0/g' /etc/swift/account-server/*
+    sed -i 's/bind_ip = 127.0.0../bind_ip = 0.0.0.0/g' /etc/swift/container-server/*
+    sed -i 's/bind_ip = 127.0.0../bind_ip = 0.0.0.0/g' /etc/swift/object-server/*
+fi
 
 # setup scripts for runnning swift
 cd $HOME/swift/doc; cp -r saio/bin $HOME/bin; cd -
@@ -205,6 +214,17 @@ echo "export PATH=${PATH}:$HOME/bin" >> $HOME/.bashrc
 . $HOME/.bashrc
 
 # Make the rings
+if [[ $LOCALHOST == 0 ]]
+then
+    if [[ $USER == 'vagrant' ]]
+    then
+        sudo ifup eth1
+    fi
+    my_ip=$(ip a |grep $IP_SUBNET |awk '{print $2}' |awk -F '/' '{print $1}')
+    sed -i "s/127.0.0../$my_ip/g" $HOME/bin/remakerings
+    sed -i "/use = egg:swift#memcache/a memcache_servers = $my_ip:11211" /etc/swift/proxy-server.conf
+    sudo echo "$my_up swiftproxy" >> /etc/hosts
+fi
 $HOME/bin/remakerings
 
 . $HOME/.bashrc
@@ -233,5 +253,30 @@ if [ $(ps -eaf |grep -c "\/swift") -le 1 ]
 then
   $HOME/bin/startmain
   $HOME/bin/startrest
+fi
+
+if [[ $LOCALHOST == 1 ]]
+then
+  my_ip="127.0.0.1"
+fi
+
+cat <<EOF > ~/swiftclient_v1.env
+export ST_AUTH=http://$my_ip:8080/auth/v1.0
+# Admin
+export ST_USER=test:tester
+export ST_KEY=testing
+# USER
+#export ST_USER=test:tester3
+#export ST_KEY=testing3
+EOF
+
+if [[ $LOCALHOST == 0 ]]
+then
+    cat <<EOF > ~/.ssh/config
+Host $IP_SUBNET.*
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+EOF
+    chmod 600 ~/.ssh/config
 fi
 exit 0
