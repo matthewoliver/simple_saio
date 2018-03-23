@@ -1,0 +1,163 @@
+[vagrant@saio1 ~]$ source matt_user_KEY.env
+[vagrant@saio1 ~]$ swift stat
+               Account: KEY_f83a44c0cb6a477cb191a0d01490b0f0
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712000.99810
+           X-Timestamp: 1521712000.99810
+            X-Trans-Id: tx75b6c626ec374e23846f0-005ab37b77
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: tx75b6c626ec374e23846f0-005ab37b77
+[vagrant@saio1 ~]$ source matt_user_AUTH.env
+[vagrant@saio1 ~]$ swift stat
+               Account: AUTH_f7422b5210b3400c8100940344681271
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712020.91510
+           X-Timestamp: 1521712020.91510
+            X-Trans-Id: txf12f68ec555e473da1183-005ab37b94
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: txf12f68ec555e473da1183-005ab37b94
+
+
+Swift proxy conf:
+
+[vagrant@saio1 ~]$ source matt_user_KEY.env
+[vagrant@saio1 ~]$ swift stat
+               Account: KEY_f83a44c0cb6a477cb191a0d01490b0f0
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712000.99810
+           X-Timestamp: 1521712000.99810
+            X-Trans-Id: tx75b6c626ec374e23846f0-005ab37b77
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: tx75b6c626ec374e23846f0-005ab37b77
+[vagrant@saio1 ~]$ source matt_user_AUTH.env
+[vagrant@saio1 ~]$ swift stat
+               Account: AUTH_f7422b5210b3400c8100940344681271
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712020.91510
+           X-Timestamp: 1521712020.91510
+            X-Trans-Id: txf12f68ec555e473da1183-005ab37b94
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: txf12f68ec555e473da1183-005ab37b94
+
+
+Swift proxy conf:
+
+[vagrant@saio1 ~]$ source matt_user_KEY.env
+[vagrant@saio1 ~]$ swift stat
+               Account: KEY_f83a44c0cb6a477cb191a0d01490b0f0
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712000.99810
+           X-Timestamp: 1521712000.99810
+            X-Trans-Id: tx75b6c626ec374e23846f0-005ab37b77
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: tx75b6c626ec374e23846f0-005ab37b77
+[vagrant@saio1 ~]$ source matt_user_AUTH.env
+[vagrant@saio1 ~]$ swift stat
+               Account: AUTH_f7422b5210b3400c8100940344681271
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712020.91510
+           X-Timestamp: 1521712020.91510
+            X-Trans-Id: txf12f68ec555e473da1183-005ab37b94
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: txf12f68ec555e473da1183-005ab37b94
+
+
+Swift proxy conf:
+
+[vagrant@saio1 ~]$ source matt_user_KEY.env
+[vagrant@saio1 ~]$ swift stat
+               Account: KEY_f83a44c0cb6a477cb191a0d01490b0f0
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712000.99810
+           X-Timestamp: 1521712000.99810
+            X-Trans-Id: tx75b6c626ec374e23846f0-005ab37b77
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: tx75b6c626ec374e23846f0-005ab37b77
+[vagrant@saio1 ~]$ source matt_user_AUTH.env
+[vagrant@saio1 ~]$ swift stat
+               Account: AUTH_f7422b5210b3400c8100940344681271
+            Containers: 0
+               Objects: 0
+                 Bytes: 0
+       X-Put-Timestamp: 1521712020.91510
+           X-Timestamp: 1521712020.91510
+            X-Trans-Id: txf12f68ec555e473da1183-005ab37b94
+          Content-Type: text/plain; charset=utf-8
+X-Openstack-Request-Id: txf12f68ec555e473da1183-005ab37b94
+
+
+Swift proxy conf:
+
+...
+[pipeline:main]
+# Yes, proxy-logging appears twice. This is so that
+# middleware-originated requests get logged too.
+pipeline = catch_errors gatekeeper healthcheck proxy-logging cache listing_formats bulk tempurl ratelimit crossdomain container_sync authtoken keystoneauth authtoken2 keystoneauth2 staticweb copy container-quota
+s account-quotas slo dlo versioned_writes symlink proxy-logging proxy-server
+
+...
+[filter:authtoken]
+paste.filter_factory = keystonemiddleware.auth_token:filter_factory
+#auth_host = 192.168.100.21
+#auth_port = 35357
+#auth_protocol = http
+auth_plugin = password
+auth_url = http://192.168.100.21:35357/
+#auth_uri = http://192.168.100.21:5000
+project_name = service
+project_domain_id = default
+username = swift
+password = Sekr3tPass
+delay_auth_decision = True
+service_token_roles_required = True
+user_domain_id = default
+# cache = swift.cache
+# include_service_catalog = False
+
+[filter:keystoneauth]
+use = egg:swift#keystoneauth
+reseller_prefix = KEY
+operator_roles = admin, SwiftOperator
+reseller_admin_role = ResellerAdmin
+
+[filter:authtoken2]
+paste.filter_factory = keystonemiddleware.auth_token:filter_factory
+# Older style
+#auth_host = 192.168.100.20
+#auth_port = 35357
+#auth_protocol = http
+#auth_uri = http://192.168.100.20:5000/
+#admin_tenant_name = service
+#admin_user = swift
+#admin_password = Sekr3tPass
+auth_plugin = password
+auth_url = http://192.168.100.20:35357/
+project_name = service
+project_domain_id = default
+username = swift
+password = Sekr3tPass
+user_domain_id = default
+delay_auth_decision = True
+service_token_roles_required = True
+# cache = swift.cache
+# include_service_catalog = False
+
+[filter:keystoneauth2]
+use = egg:swift#keystoneauth
+# reseller_prefix = AUTH
+operator_roles = admin, SwiftOperator
+reseller_admin_role = ResellerAdmin
