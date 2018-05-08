@@ -15,7 +15,7 @@ git clone https://github.com/openstack/keystone.git
 #source ~/venv/keystone/bin/activate
 
 cd $HOME/keystone
-#git checkout stable/queens
+git checkout stable/queens
 echo 'pika>=0.9,<0.11' >> requirements.txt
 sudo pip install -r requirements.txt
 sudo pip install -e .

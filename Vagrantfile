@@ -1,5 +1,5 @@
-keystone_vms = 2
-VMS = 2
+keystone_vms = 4
+VMS = 4
 
 Vagrant.configure(2) do |config|
   config.vm.box = "centos/7"
@@ -33,8 +33,8 @@ Vagrant.configure(2) do |config|
             vb.cpus = 2
         end
         config.vm.provision "put_installer", type: "file", source: "setup_keystone.sh", destination: "~/setup_keystone.sh"
-        config.vm.provision "put_join_saio", type: "shell", inline: "echo not an saio"
-        config.vm.provision "put_saio_keysone", type: "shell", inline: "echo not an saio"
+        #config.vm.provision "put_join_saio", type: "shell", inline: "echo not an saio"
+        #config.vm.provision "put_saio_keysone", type: "shell", inline: "echo not an saio"
         config.vm.provision "run_installer", type: "shell", inline: "bash ~vagrant/setup_keystone.sh", privileged: false
     end
   end
