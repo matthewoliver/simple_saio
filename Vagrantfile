@@ -24,6 +24,8 @@ Vagrant.configure(2) do |config|
         config.vm.provision "file", source: "~/.ssh/id_rsa_vagrant", destination: "~/.ssh/id_rsa"
         config.vm.provision "file", source: "~/.ssh/id_rsa_vagrant.pub", destination: "~/.ssh/id_rsa.pub"
         config.vm.provision "shell", inline: "bash ~vagrant/saio.sh", privileged: false
+        config.vm.provision "file", source: "setup_extras.sh", destination: "~/setup_extras.sh"
+        config.vm.provision "shell", inline: "bash ~vagrant/setup_extras.sh", privileged: false
     end
   end
 end

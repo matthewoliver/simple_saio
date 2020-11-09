@@ -3,7 +3,7 @@ DEBIAN=0
 REDHAT=1
 SUSE=2
 SIZE=1
-UNIT_TESTS=1
+UNIT_TESTS=0
 BUILD_LIBERASURECODE=1
 SETUP_VENV=1
 branch=${1:-master}
@@ -69,15 +69,12 @@ else
   sudo zypper --gpg-auto-import-keys install -y \
                       curl gcc memcached rsync sqlite3 xfsprogs git-core \
                       libffi-devel liberasurecode-devel python2-setuptools \
-                      libopenssl-devel zlib-devel python3
+                      libopenssl-devel zlib-devel python3 python-devel python3-devel
   sudo zypper --gpg-auto-import-keys install -y \
-											python2-coverage python2-devel python2-nose \
-                      python2-xattr python2-greenlet \
-                      python2-netifaces python2-pip python2-dnspython \
-                      python3-coverage python3-devel python3-nose \
-                      python3-xattr python3-eventlet python3-greenlet \
-                      python3-netifaces python3-pip python3-dnspython \
-                      python3-mock python3-dbm
+                      python2-pip python3-coverage python3-devel \
+                      python3-nose python3-xattr python3-eventlet \
+                      python3-greenlet python3-netifaces python3-pip \
+                      python3-dnspython python3-mock python3-dbm
   users_grp="users"
 fi
 
@@ -158,7 +155,7 @@ then
 fi
 
 # upgrade pip and tox
-sudo pip install pip tox setuptools --upgrade
+sudo pip install pip tox setuptools git-review --upgrade
 
 if [ $SETUP_VENV -gt 0 ]
 then
