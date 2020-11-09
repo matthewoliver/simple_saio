@@ -1,0 +1,23 @@
+# The vim below is to change the order so 192.168.100.10 is first in the list. And is making saio0 the dns server
+sudo nmcli con mod "System eth0" ipv4.dns "192.168.100.10"; sudo service network restart; sudo vim /etc/resolv.conf; sudo chattr +i /etc/resolv.conf
+
+
+# The dnsmasq configuration.
+# /etc/hosts
+192.168.100.20 keystone0
+192.168.100.21 keystone1
+192.168.100.22 keystone2 idp1 sp1
+192.168.100.23 keystone3 idp2 sp2
+
+192.168.100.10 saio0
+192.168.100.11 saio1
+192.168.100.12 saio2 swiftproxy1
+192.168.100.13 saio3 swiftproxy2
+
+# only dns options I've added to dnsmasq is: /etc/dnsmasq.d/dns.conf 
+expand-hosts
+domain=example.lan
+
+# then obviously
+sudo systemctl start dnsmasq.service
+sudo systemctl enable dnsmasq.service

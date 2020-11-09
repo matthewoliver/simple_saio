@@ -96,6 +96,7 @@ export OS_USER_DOMAIN_ID=default
 export OS_PROJECT_DOMAIN_ID=default
 export OS_IDENTITY_API_VERSION=3
 export OS_AUTH_URL=http://$my_ip:5000/v3
+export OS_DOMAIN_NAME=Default
 EOF
 
 cat > ~/swift-proxy-snippet.conf <<EOF
