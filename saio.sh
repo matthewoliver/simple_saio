@@ -7,8 +7,9 @@ UNIT_TESTS=0
 BUILD_LIBERASURECODE=1
 SETUP_VENV=1
 branch=${1:-master}
+PIP="pip"
 
-DISTRO=$SUSE
+DISTRO=$REDHAT
 
 function build_liberasurecode() {
   if [ ${BUILD_LIBERASURECODE} -eq 0 ]
@@ -54,16 +55,30 @@ then
   users_grp="${USER}"
 elif [ $DISTRO -eq $REDHAT ]
 then
+  source /etc/os-release
   sudo yum update
   sudo yum install -y epel-release
-  sudo yum install -y curl gcc memcached rsync sqlite xfsprogs git-core \
-                      libffi-devel xinetd \
-                      openssl-devel python-setuptools \
-                      python-coverage python-devel python-nose \
-                      pyxattr python-eventlet \
-                      python-greenlet python-paste-deploy \
-                      python-netifaces python-pip python-dns \
-                      python-mock
+  if [ $VERISON -lt 8 ]
+  then
+    sudo yum install -y curl gcc memcached rsync sqlite xfsprogs git-core \
+                          libffi-devel xinetd \
+                          openssl-devel python-setuptools \
+                          python-coverage python-devel python-nose \
+                          pyxattr python-eventlet \
+                          python-greenlet python-paste-deploy \
+                          python-netifaces python-pip python-dns \
+                          python-mock
+  else
+	PIP="pip2"
+    sudo yum install -y curl gcc memcached rsync sqlite xfsprogs git-core \
+                        libffi-devel xinetd rsync-daemon \
+                        openssl-devel python2-setuptools python3-setuptools \
+						python2-coverage python2-devel python2-nose \
+						python3-coverage python3-devel python3-nose \
+						python3-eventlet python3-greenlet python3-paste-deploy \
+						python3-netifaces python2-pip python3-pip python3-dns \
+						python2-mock
+  fi
   users_grp="${USER}"
 else
   sudo zypper --gpg-auto-import-keys install -y \
@@ -155,7 +170,10 @@ then
 fi
 
 # upgrade pip and tox
-sudo pip install pip tox setuptools git-review --upgrade
+#sudo pip install pip tox git-review virtualenv setuptools --upgrade
+sudo $PIP install pip tox --upgrade
+sudo $PIP install setuptools --upgrade
+sudo $PIP install tox git-review virtualenv --upgrade
 
 if [ $SETUP_VENV -gt 0 ]
 then
@@ -168,14 +186,19 @@ fi
 cd $HOME; git clone https://github.com/openstack/python-swiftclient.git
 if [ $SETUP_VENV -gt 0 ]
 then
-  PIP="pip"
+  PIP="$PIP"
 else
-  PIP="sudo pip"
+  PIP="sudo $PIP"
 fi
 cd $HOME/python-swiftclient; $PIP install -e . ; cd -
 
 git clone https://github.com/openstack/swift.git
-cd $HOME/swift; git checkout $branch; sudo pip install --no-binary cryptography -r requirements.txt;
+if [ $DISTRO -eq $SUSE ]
+then
+  cd $HOME/swift; git checkout $branch; $PIP install --no-binary cryptography -r requirements.txt;
+else
+  cd $HOME/swift; git checkout $branch; $PIP install -r requirements.txt;
+fi
 $PIP install -e .
 cd -
 
@@ -188,7 +211,7 @@ then
   $PIP install ipaddress
 fi
 
-sudo pip install -r swift/test-requirements.txt
+$PIP install -r swift/test-requirements.txt
 
 # setup rsync
 sudo cp $HOME/swift/doc/saio/rsyncd.conf /etc/
@@ -215,7 +238,7 @@ sudo systemctl start memcached.service
 
 # Syslog
 sudo cp $HOME/swift/doc/saio/rsyslog.d/10-swift.conf /etc/rsyslog.d/
-sed -i  's/^$PrivDropToGroup .*/$PrivDropToGroup adm/' /etc/rsyslog.conf
+sudo sed -i  's/^$PrivDropToGroup .*/$PrivDropToGroup adm/' /etc/rsyslog.conf
 sudo mkdir -p /var/log/swift
 sudo chown -R syslog.adm /var/log/swift
 sudo chmod -R g+w /var/log/swift

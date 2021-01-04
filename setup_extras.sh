@@ -2,7 +2,15 @@
 
 mkdir -p  ~/repos
 cd ~/repos
-sudo zypper install -y vim vim-data git tmux fontconfig wget unzip tree sysstat collectl
+source /etc/os-release
+if [ $VERSION -lt 8 ]
+then
+	PIP="pip"
+	sudo dnf install -y vim vim-data git tmux fontconfig wget unzip tree sysstat collectl
+else
+	PIP="pip2"
+	sudo dnf install -y vim git tmux fontconfig wget unzip tree sysstat
+fi
 
 # vim_config and tmux config
 #for x in vim_config tmux_config; do
@@ -24,7 +32,7 @@ cd ~/bin
 ln -sf ~/repos/git-vimdiff/git-vimdiff.py git-vimdiff
 
 # other useful tools
-sudo pip install pudb nose-pudb
+sudo $pip install pudb nose-pudb
 
 cd
 git clone https://github.com/matthewoliver/junk
