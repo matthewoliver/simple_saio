@@ -149,6 +149,7 @@ mkdir -p /var/run/swift
 chown ${USER}:${users_grp} /var/run/swift
 EOF
 sudo $setup_saio_mounts
+echo "sudo $setup_saio_mounts" >> ~/.bashrc
 
 if [ $DISTRO -eq $DEBIAN ]
 then
