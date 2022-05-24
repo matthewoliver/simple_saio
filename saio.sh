@@ -134,6 +134,13 @@ sudo mkdir -p /srv/1/node/sdb1 /srv/1/node/sdb5 \
               /srv/3/node/sdb3 /srv/3/node/sdb7 \
               /srv/4/node/sdb4 /srv/4/node/sdb8 \
               /var/run/swift
+for drive in /srv/1/node/sdb1 /srv/1/node/sdb5 \
+             /srv/2/node/sdb2 /srv/2/node/sdb6 \
+             /srv/3/node/sdb3 /srv/3/node/sdb7 \
+             /srv/4/node/sdb4 /srv/4/node/sdb8
+do
+    touch $drive/.ismount
+done
 sudo chown -R ${USER}:${users_grp} /var/run/swift
 # **Make sure to include the trailing slash after /srv/$x/**
 for x in {1..4}; do sudo chown -R ${USER}:${users_grp} /srv/$x/; done
